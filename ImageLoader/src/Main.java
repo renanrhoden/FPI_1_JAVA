@@ -31,6 +31,11 @@ public class Main extends Component{
         fc = new JFileChooser();
 
         JFrame frame = new JFrame("Main");
+        frame.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
         frame.setContentPane(new Main().mainJPanel);
         frame.pack();
         frame.setVisible(true);
@@ -39,11 +44,7 @@ public class Main extends Component{
     private static void openPic(File file) {
         JFrame originalImageFrame = new JFrame("Original Image");
 
-        originalImageFrame.addWindowListener(new WindowAdapter(){
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
+
         originalImage = new OriginalImageLoader(file);
 
         originalImageFrame.add(originalImage);
@@ -108,7 +109,7 @@ public class Main extends Component{
                     // retrieve image
                     String fileName = nameSave.getText();
                     BufferedImage bi = lastImageMade.img;
-                    File outputfile = new File("fileName" + ".jpg");
+                    File outputfile = new File(fileName + ".jpg");
                     ImageIO.write(bi, "jpg", outputfile);
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
