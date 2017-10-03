@@ -17,9 +17,9 @@ public class OriginalImageLoader extends Component{
         g.drawImage(img, 0, 0, null);
     }
 
-    public OriginalImageLoader() {
+    public OriginalImageLoader(File file) {
         try {
-            img = ImageIO.read(new File("/home/renanrhoden/IdeaProjects/FPI_1_JAVA/images/Gramado_22k.jpg"));
+            img = ImageIO.read(file);
         } catch (IOException e) {
         }
 

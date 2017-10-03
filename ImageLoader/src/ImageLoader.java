@@ -11,6 +11,7 @@ public class ImageLoader extends Component {
     public static final int HORIZONTAL_FLIP = 2;
     public static final int VERTICAL_FLIP = 3;
     public static final int GRAYSCALE = 1;
+
     public BufferedImage img;
     private int action;
 
@@ -18,12 +19,24 @@ public class ImageLoader extends Component {
         g.drawImage(img, 0, 0, null);
     }
 
-    public ImageLoader(int action) {
-        this.action = action;
+    public ImageLoader(int action, File file) {
         try {
-            img = ImageIO.read(new File("/home/renanrhoden/IdeaProjects/FPI_1_JAVA/images/Gramado_22k.jpg"));//get alpha
+            img = ImageIO.read(file);
         } catch (IOException e) {
         }
+    }
+
+    public Dimension getPreferredSize() {
+        if (img == null) {
+            return new Dimension(100, 100);
+        } else {
+            return new Dimension(img.getWidth(null), img.getHeight(null));
+        }
+    }
+
+    public ImageLoader(int action, BufferedImage image) {
+        this.action = action;
+        this.img = image;
 
         int imgHeight = img.getHeight();
         int imgWidth = img.getWidth();
@@ -77,14 +90,6 @@ public class ImageLoader extends Component {
             img = bi;
 
 
-    }
-
-    public Dimension getPreferredSize() {
-        if (img == null) {
-            return new Dimension(100, 100);
-        } else {
-            return new Dimension(img.getWidth(null), img.getHeight(null));
-        }
     }
 }
 

@@ -10,18 +10,33 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class Main {
+public class Main extends Component{
     private JPanel  mainJPanel;
     private JButton espelharVerticalmenteButton;
     private JButton salvarButton;
     private JButton espelharHorizontalmenteButton;
     private JButton tonsDeCinzaButton;
     private JTextField nameSave;
+    private JButton abrirButton;
     private JFrame changedImageFrame;
     private ImageLoader lastImageMade;
+    static JFileChooser fc;
+    static OriginalImageLoader originalImage;
+    boolean jaAbriu = false;
+
+    File file;
 
     public static void main(String[] args) {
 
+        fc = new JFileChooser();
+
+        JFrame frame = new JFrame("Main");
+        frame.setContentPane(new Main().mainJPanel);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private static void openPic(File file) {
         JFrame originalImageFrame = new JFrame("Original Image");
 
         originalImageFrame.addWindowListener(new WindowAdapter(){
@@ -29,25 +44,25 @@ public class Main {
                 System.exit(0);
             }
         });
+        originalImage = new OriginalImageLoader(file);
 
-        originalImageFrame.add(new OriginalImageLoader());
+        originalImageFrame.add(originalImage);
         originalImageFrame.pack();
         originalImageFrame.setVisible(true);
 
-
-        JFrame frame = new JFrame("Main");
-        frame.setContentPane(new Main().mainJPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
     }
 
     public Main() {
         espelharVerticalmenteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                changedImageFrame = new JFrame("Load Image Sample");
-                lastImageMade = new ImageLoader(ImageLoader.VERTICAL_FLIP);
+                if (changedImageFrame != null) {
+                    changedImageFrame.remove(lastImageMade);
+                    changedImageFrame.setTitle("Vertical flip");
+                } else {
+                    changedImageFrame = new JFrame("Vertical flip");
+                }
+                lastImageMade = new ImageLoader(ImageLoader.VERTICAL_FLIP, lastImageMade.img);
                 changedImageFrame.add(lastImageMade);
                 changedImageFrame.pack();
                 changedImageFrame.setVisible(true);
@@ -58,8 +73,13 @@ public class Main {
         tonsDeCinzaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                changedImageFrame = new JFrame("Grayscale");
-                lastImageMade = new ImageLoader(ImageLoader.GRAYSCALE);
+                if (changedImageFrame != null) {
+                    changedImageFrame.remove(lastImageMade);
+                    changedImageFrame.setTitle("Grayscale");
+                } else {
+                    changedImageFrame = new JFrame("Grayscale");
+                }
+                lastImageMade = new ImageLoader(ImageLoader.GRAYSCALE, lastImageMade.img);
                 changedImageFrame.add(lastImageMade);
                 changedImageFrame.pack();
                 changedImageFrame.setVisible(true);
@@ -68,9 +88,13 @@ public class Main {
         espelharHorizontalmenteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                changedImageFrame = new JFrame("Grayscale");
-
-                lastImageMade = new ImageLoader(ImageLoader.HORIZONTAL_FLIP);
+                if (changedImageFrame != null) {
+                    changedImageFrame.remove(lastImageMade);
+                    changedImageFrame.setTitle("Horizontal flip");
+                } else {
+                    changedImageFrame = new JFrame("Horizontal flip");
+                }
+                lastImageMade = new ImageLoader(ImageLoader.HORIZONTAL_FLIP, lastImageMade.img);
                 changedImageFrame.add(lastImageMade);
                 changedImageFrame.pack();
                 changedImageFrame.setVisible(true);
@@ -88,6 +112,26 @@ public class Main {
                     ImageIO.write(bi, "jpg", outputfile);
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
+                }
+            }
+        });
+        abrirButton.addActionListener(new ActionListener() {
+            char newline = '\n';
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Handle open button action.
+                if (e.getSource() == abrirButton) {
+                    int returnVal = fc.showOpenDialog(Main.this);
+
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                        file = fc.getSelectedFile();
+                        openPic(file);
+
+                        lastImageMade = new ImageLoader(0, file);
+                       System.out.println("Opening: " + file.getName() + "." + newline);
+                    } else {
+                        System.out.println("Open command cancelled by user." + newline);
+                    }
                 }
             }
         });
