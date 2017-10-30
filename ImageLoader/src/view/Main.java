@@ -44,6 +44,25 @@ public class Main extends JFrame{
     private JButton tonsDeCinzaButton;
     private JTextField nameSave;
     private JButton abrirButton;
+
+    public JSlider getBrilhoSlider() {
+        return brilhoSlider;
+    }
+
+    private JSlider brilhoSlider;
+    private JTextField brilhoTextField;
+
+    public JButton getNegativoButton() {
+        return negativoButton;
+    }
+
+    private JButton negativoButton;
+
+    public JSpinner getContrastSpinner() {
+        return contrastSpinner;
+    }
+
+    private JSpinner contrastSpinner;
     private JFrame changedImageFrame;
 
 
@@ -54,6 +73,6 @@ public class Main extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
         this.setVisible(true);
-
+        contrastSpinner.setModel(new SpinnerNumberModel(1, 1, 255, 1));
     }
 }

@@ -1,44 +1,83 @@
 package controller;
 
+import com.sun.istack.internal.Nullable;
 import model.ImageTransformed;
 import model.OriginalImage;
 import view.ImageComponent;
 import view.Main;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class Controller implements ActionListener {
+public class Controller implements ActionListener, ChangeListener {
 
+    public static final String GRAYSCALE = "Grayscale";
+    public static final String VERTICAL_FLIP = "VerticalFlip";
+    public static final String HORIZONTAL_FLIP = "HorizontalFlip";
+    public static final String BRIGHT = "bright";
+    public static final String NEGATIVO = "negativo";
+    public static final String CONTRASTE = "Contraste";
     private Main main;
     private JFileChooser fc;
+    private JFrame frame;
+    private Component component;
 
     public Controller(Main main) {
         fc = new JFileChooser();
+        frame = new JFrame();
         this.main = main;
         this.main.getEspelharVerticalmenteButton().addActionListener(this);
         this.main.getAbrirButton().addActionListener(this);
         this.main.getEspelharHorizontalmenteButton().addActionListener(this);
         this.main.getTonsDeCinzaButton().addActionListener(this);
+        this.main.getBrilhoSlider().addChangeListener(this);
+        this.main.getNegativoButton().addActionListener(this);
+        this.main.getContrastSpinner().addChangeListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (actionEvent.getSource() ==main.getEspelharVerticalmenteButton()){
-            if (OriginalImage.getInstance().getImg() == null){
-                return;
-            }
-            JFrame frame = new JFrame("VerticalFlip");
-            BufferedImage image;
-            ImageTransformed transformed = new ImageTransformed(OriginalImage.getInstance().getImg());
-            image = transformed.getImageVerticallyFlipped();
-            frame.add(new ImageComponent(image));
+        if (actionEvent.getSource() == main.getEspelharVerticalmenteButton()) {
+
+            if (setNewImage(VERTICAL_FLIP, null)) return;
             frame.pack();
             frame.setVisible(true);
         }
+        if (actionEvent.getSource() == main.getTonsDeCinzaButton()) {
+            if (setNewImage(GRAYSCALE, null)) return;
+            frame.pack();
+            frame.setVisible(true);
+        }
+
+        if (actionEvent.getSource() == main.getEspelharHorizontalmenteButton()){
+            if (setNewImage(HORIZONTAL_FLIP, null)) return;
+            frame.pack();
+            frame.setVisible(true);
+        }
+        if (actionEvent.getSource() == main.getNegativoButton()){
+            if (setNewImage(NEGATIVO, null)) return;
+            frame.pack();
+            frame.setVisible(true);
+        }
+
+//        if (actionEvent.getSource() == main.getSalvarButton()){
+//            try {
+//                // retrieve image
+//                String fileName = nameSave.getText();
+//                BufferedImage bi = lastImageMade.img;
+//                File outputfile = new File("fileName" + ".jpg");
+//                ImageIO.write(bi, "jpg", outputfile);
+//            } catch (IOException e) {
+//                System.out.println(e.getMessage());
+//            }
+//
+//        }
         if (actionEvent.getSource() == this.main.getAbrirButton()) {
             int returnVal = fc.showOpenDialog(main);
 
@@ -54,41 +93,64 @@ public class Controller implements ActionListener {
                 System.out.println("Open command cancelled by user.");
             }
         }
+    }
 
-        if (actionEvent.getSource() == main.getTonsDeCinzaButton()){
-            if (OriginalImage.getInstance().getImg() == null){
-                return;
-            }
-            JFrame frame = new JFrame("VerticalFlip");
-//            BufferedImage image = OriginalImage.getInstance().loadImg(new File("/home/renanrhoden/IdeaProjects/FPI_1_JAVA/images/Gramado_22k.jpg"));
-            ImageTransformed transformed = new ImageTransformed(OriginalImage.getInstance().getImg());
-            frame.add(new ImageComponent(transformed.getImageGrayscaled()));
+    private boolean setNewImage(String action, @Nullable Integer bright) {
+        if (OriginalImage.getInstance().getImg() == null) {
+            return true;
+        }
+        frame.setTitle(action);
+        BufferedImage image;
+        if (ImageTransformed.getInstance().getImg() == null) {
+            ImageTransformed.getInstance().setImg(OriginalImage.getInstance().getImg());
+        }
+        switch (action) {
+            case GRAYSCALE:
+                image = ImageTransformed.getInstance().getImageGrayscaled();
+                break;
+            case VERTICAL_FLIP:
+                image = ImageTransformed.getInstance().getImageVerticallyFlipped();
+                break;
+            case HORIZONTAL_FLIP:
+                image = ImageTransformed.getInstance().getImageHorizontallyFlipped();
+                break;
+            case BRIGHT:
+                image = ImageTransformed.getInstance().getImageWithBright(bright);
+                break;
+            case NEGATIVO:
+                image =  ImageTransformed.getInstance().getImageNegative();
+                break;
+            case CONTRASTE:
+                image = ImageTransformed.getInstance().getImageConstrasted(bright);
+                break;
+            default:
+                image = null;
+        }
+
+        if (component != null) {
+            frame.remove(component);
+        }
+
+        component = new ImageComponent(image);
+        frame.add(component);
+        return false;
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent changeEvent) {
+        if (changeEvent.getSource() == main.getBrilhoSlider()){
+            JSlider slider = (JSlider)changeEvent.getSource();
+            int bright = slider.getValue();
+            if (setNewImage(BRIGHT, bright)) return;
             frame.pack();
             frame.setVisible(true);
         }
-
-        if (actionEvent.getSource() == main.getEspelharHorizontalmenteButton()){
-            if (OriginalImage.getInstance().getImg() == null){
-                return;
-            }
-            JFrame frame = new JFrame("HorizontalFlip");
-            ImageTransformed transformed = new ImageTransformed(OriginalImage.getInstance().getImg());
-            frame.add(new ImageComponent(transformed.getImageHorizontallyFlipped()));
+        if (changeEvent.getSource() == main.getContrastSpinner()){
+            JSpinner source = (JSpinner)changeEvent.getSource();
+            int contrast = (int)source.getValue();
+            if (setNewImage(CONTRASTE, contrast)) return;
             frame.pack();
             frame.setVisible(true);
         }
-//
-//        if (actionEvent.getSource() == main.getSalvarButton()){
-//            try {
-//                // retrieve image
-//                String fileName = nameSave.getText();
-//                BufferedImage bi = lastImageMade.img;
-//                File outputfile = new File("fileName" + ".jpg");
-//                ImageIO.write(bi, "jpg", outputfile);
-//            } catch (IOException e) {
-//                System.out.println(e.getMessage());
-//            }
-//
-//        }
     }
 }
