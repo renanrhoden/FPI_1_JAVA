@@ -63,8 +63,12 @@ public class Main extends JFrame{
     }
 
     private JSpinner contrastSpinner;
+    private JButton histogramaButton;
     private JFrame changedImageFrame;
 
+    public JButton getHistogramaButton() {
+        return histogramaButton;
+    }
 
     public Main() {
 

@@ -1,8 +1,14 @@
 package controller;
 
 import com.sun.istack.internal.Nullable;
+import model.Histogram;
 import model.ImageTransformed;
 import model.OriginalImage;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.statistics.HistogramDataset;
 import view.ImageComponent;
 import view.Main;
 
@@ -39,6 +45,7 @@ public class Controller implements ActionListener, ChangeListener {
         this.main.getBrilhoSlider().addChangeListener(this);
         this.main.getNegativoButton().addActionListener(this);
         this.main.getContrastSpinner().addChangeListener(this);
+        this.main.getHistogramaButton().addActionListener(this);
     }
 
     @Override
@@ -51,6 +58,32 @@ public class Controller implements ActionListener, ChangeListener {
         }
         if (actionEvent.getSource() == main.getTonsDeCinzaButton()) {
             if (setNewImage(GRAYSCALE, null)) return;
+            frame.pack();
+            frame.setVisible(true);
+        }
+        if (actionEvent.getSource() == main.getHistogramaButton()) {
+            Histogram histogram = new Histogram(ImageTransformed.getInstance().getImageGrayscaled());
+            int [] normalizedValues = histogram.getNormalizedValues();
+            JPanel chartPanel;
+            double[] nDouble = new double[256];
+            for (int i = 0; i < normalizedValues.length; i++) {
+                nDouble[i] = normalizedValues[i];
+            }
+            HistogramDataset data = new HistogramDataset();
+            data.addSeries("Histogram", nDouble, 10);
+
+            String plotTitle = "Histogram";
+            String xaxis = "number";
+            String yaxis = "value";
+            PlotOrientation orientation = PlotOrientation.VERTICAL;
+            boolean show = false;
+            boolean toolTips = false;
+            boolean urls = false;
+            int width = 500;
+            int height = 300;
+            JFreeChart chart = ChartFactory.createHistogram( plotTitle, xaxis, yaxis,
+                    data, orientation, show, toolTips, urls);
+                frame = new ChartFrame("Teste", chart);
             frame.pack();
             frame.setVisible(true);
         }
