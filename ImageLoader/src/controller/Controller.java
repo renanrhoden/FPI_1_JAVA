@@ -95,7 +95,7 @@ public class Controller implements ActionListener, ChangeListener {
         }
     }
 
-    private boolean setNewImage(String action, @Nullable Integer bright) {
+    private boolean setNewImage(String action, @Nullable Double bright) {
         if (OriginalImage.getInstance().getImg() == null) {
             return true;
         }
@@ -115,7 +115,7 @@ public class Controller implements ActionListener, ChangeListener {
                 image = ImageTransformed.getInstance().getImageHorizontallyFlipped();
                 break;
             case BRIGHT:
-                image = ImageTransformed.getInstance().getImageWithBright(bright);
+                image = ImageTransformed.getInstance().getImageWithBright(bright.intValue());
                 break;
             case NEGATIVO:
                 image =  ImageTransformed.getInstance().getImageNegative();
@@ -141,13 +141,13 @@ public class Controller implements ActionListener, ChangeListener {
         if (changeEvent.getSource() == main.getBrilhoSlider()){
             JSlider slider = (JSlider)changeEvent.getSource();
             int bright = slider.getValue();
-            if (setNewImage(BRIGHT, bright)) return;
+            if (setNewImage(BRIGHT, (double)bright)) return;
             frame.pack();
             frame.setVisible(true);
         }
         if (changeEvent.getSource() == main.getContrastSpinner()){
             JSpinner source = (JSpinner)changeEvent.getSource();
-            int contrast = (int)source.getValue();
+            double contrast = (double)source.getValue();
             if (setNewImage(CONTRASTE, contrast)) return;
             frame.pack();
             frame.setVisible(true);

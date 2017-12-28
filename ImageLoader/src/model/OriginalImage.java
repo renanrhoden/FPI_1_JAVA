@@ -17,6 +17,7 @@ public class OriginalImage {
 
     public BufferedImage loadImg(File file) {
         this.img = ImageDAO.open(file);
+        ImageTransformed.getInstance().setImg(img);
         return this.img;
     }
 

@@ -73,6 +73,6 @@ public class Main extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
         this.setVisible(true);
-        contrastSpinner.setModel(new SpinnerNumberModel(1, 1, 255, 1));
+        contrastSpinner.setModel(new SpinnerNumberModel(0.1, 0, 255, 0.001));
     }
 }
